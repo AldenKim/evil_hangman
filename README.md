@@ -1,1 +1,2 @@
-# evil_hangman
+# Evil Hangman
+Java Based Simple Game Application.
