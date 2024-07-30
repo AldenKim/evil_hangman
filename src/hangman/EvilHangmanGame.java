@@ -9,6 +9,7 @@ import java.util.*;
 public class EvilHangmanGame implements IEvilHangmanGame {
     private final Set<String> words = new HashSet<>();
     private final SortedSet<Character> guesses = new TreeSet<>();
+    private final Map<String, Set<String>> patternsWithWords = new HashMap<>();
     private int guessCount;
     private String currentPattern;
 
@@ -57,14 +58,52 @@ public class EvilHangmanGame implements IEvilHangmanGame {
         if(guesses.contains(guess)) {
             throw new GuessAlreadyMadeException("That letter has been used already");
         }
-
         guesses.add(guess);
+        patternsWithWords.clear();
 
-        return Set.of();
+        for(String word: words) {
+            StringBuilder buildPattern = new StringBuilder(currentPattern);
+
+            for(int i = 0; i < word.length(); i++) {
+                if(guess == word.charAt(i)) {
+                    buildPattern.setCharAt(i, guess);
+                }
+            }
+
+            String pattern = buildPattern.toString();
+            patternsWithWords.putIfAbsent(pattern, new HashSet<>());
+            patternsWithWords.get(pattern).add(word);
+        }
+
+        int max = 0;
+        Set<String> returnVal = new HashSet<>();
+
+        for(Map.Entry<String, Set<String>> entry : patternsWithWords.entrySet()) {
+            if(entry.getValue().size() > max) {
+                returnVal = entry.getValue();
+                max = entry.getValue().size();
+                currentPattern = entry.getKey();
+            } else if(entry.getValue().size() == max) {
+                String tieBreak = tieBreak(entry.getKey(), currentPattern, guess);
+                returnVal = patternsWithWords.get(tieBreak);
+                currentPattern = tieBreak;
+            }
+        }
+
+        return returnVal;
     }
+
 
     @Override
     public SortedSet<Character> getGuessedLetters() {
         return guesses;
+    }
+
+    private String tieBreak(String newPattern, String oldPattern, Character guess) {
+        if(newPattern.contains(Character.toString(guess))) {
+            return oldPattern;
+        }
+
+        return newPattern;
     }
 }
