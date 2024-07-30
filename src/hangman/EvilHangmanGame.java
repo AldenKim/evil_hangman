@@ -63,16 +63,23 @@ public class EvilHangmanGame implements IEvilHangmanGame {
 
         for(String word: words) {
             StringBuilder buildPattern = new StringBuilder(currentPattern);
+            boolean cannotAdd = false;
 
             for(int i = 0; i < word.length(); i++) {
+                if(guesses.contains(word.charAt(i))) {
+                    cannotAdd = true;
+                    continue;
+                }
                 if(guess == word.charAt(i)) {
                     buildPattern.setCharAt(i, guess);
                 }
             }
 
-            String pattern = buildPattern.toString();
-            patternsWithWords.putIfAbsent(pattern, new HashSet<>());
-            patternsWithWords.get(pattern).add(word);
+            if(!cannotAdd) {
+                String pattern = buildPattern.toString();
+                patternsWithWords.putIfAbsent(pattern, new HashSet<>());
+                patternsWithWords.get(pattern).add(word);
+            }
         }
 
         int max = 0;
