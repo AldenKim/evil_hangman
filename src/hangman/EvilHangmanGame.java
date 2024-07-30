@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class EvilHangmanGame implements IEvilHangmanGame {
-    private final Set<String> words = new HashSet<>();
+    public final Set<String> words = new HashSet<>();
     private final SortedSet<Character> guesses = new TreeSet<>();
     private final Map<String, Set<String>> patternsWithWords = new HashMap<>();
     public int guessCount;
@@ -24,7 +24,7 @@ public class EvilHangmanGame implements IEvilHangmanGame {
         if (dictionary == null) {
             throw new IOException("Empty dictionary");
         }
-        if(wordLength == 0) {
+        if(wordLength <= 1) {
             throw new EmptyDictionaryException("No words with given length");
         }
 
