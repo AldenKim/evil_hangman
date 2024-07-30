@@ -63,23 +63,16 @@ public class EvilHangmanGame implements IEvilHangmanGame {
 
         for(String word: words) {
             StringBuilder buildPattern = new StringBuilder(currentPattern);
-            boolean cannotAdd = false;
 
             for(int i = 0; i < word.length(); i++) {
-                if(guesses.contains(word.charAt(i))) {
-                    cannotAdd = true;
-                    continue;
-                }
                 if(guess == word.charAt(i)) {
                     buildPattern.setCharAt(i, guess);
                 }
             }
 
-            if(!cannotAdd) {
-                String pattern = buildPattern.toString();
-                patternsWithWords.putIfAbsent(pattern, new HashSet<>());
-                patternsWithWords.get(pattern).add(word);
-            }
+            String pattern = buildPattern.toString();
+            patternsWithWords.putIfAbsent(pattern, new HashSet<>());
+            patternsWithWords.get(pattern).add(word);
         }
 
         int max = 0;
@@ -97,6 +90,10 @@ public class EvilHangmanGame implements IEvilHangmanGame {
             }
         }
 
+        words.clear();
+        words.addAll(returnVal);
+        guessCount--;
+
         return returnVal;
     }
 
@@ -111,6 +108,27 @@ public class EvilHangmanGame implements IEvilHangmanGame {
             return oldPattern;
         }
 
-        return newPattern;
+        if(oldPattern.contains(Character.toString(guess))) {
+            return newPattern;
+        }
+
+        if(helper(newPattern) < helper(oldPattern)) {
+            return newPattern;
+        } else if  (helper(newPattern) > helper(oldPattern)) {
+            return oldPattern;
+        }
+        return oldPattern;
+    }
+
+    private int helper(String pattern) {
+        int count = 0;
+
+        for(Character c : pattern.toCharArray()) {
+            if(c != '-') {
+                count++;
+            }
+        }
+
+        return count;
     }
 }
