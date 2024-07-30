@@ -8,7 +8,7 @@ import java.util.*;
 
 public class EvilHangmanGame implements IEvilHangmanGame {
     private final Set<String> words = new HashSet<>();
-    private final Set<String> guesses = new HashSet<>();
+    private final SortedSet<Character> guesses = new TreeSet<>();
     private int guessCount;
     private String currentPattern;
 
@@ -22,14 +22,14 @@ public class EvilHangmanGame implements IEvilHangmanGame {
             throw new IOException("Empty dictionary");
         }
         if(wordLength == 0) {
-            throw new EmptyDictionaryException();
+            throw new EmptyDictionaryException("No words with given length");
         }
 
         BufferedReader reader = new BufferedReader(new FileReader(dictionary));
         String line = reader.readLine();
 
         if(Objects.equals(line, null)) {
-            throw new EmptyDictionaryException();
+            throw new EmptyDictionaryException("No words in dictionary");
         }
 
         while (line != null) {
@@ -41,7 +41,7 @@ public class EvilHangmanGame implements IEvilHangmanGame {
         reader.close();
 
         if(words.isEmpty()) {
-            throw new EmptyDictionaryException();
+            throw new EmptyDictionaryException("No words with given length");
         }
 
         guesses.clear();
@@ -53,11 +53,18 @@ public class EvilHangmanGame implements IEvilHangmanGame {
 
     @Override
     public Set<String> makeGuess(char guess) throws GuessAlreadyMadeException {
+        guess = Character.toLowerCase(guess);
+        if(guesses.contains(guess)) {
+            throw new GuessAlreadyMadeException("That letter has been used already");
+        }
+
+        guesses.add(guess);
+
         return Set.of();
     }
 
     @Override
     public SortedSet<Character> getGuessedLetters() {
-        return null;
+        return guesses;
     }
 }
