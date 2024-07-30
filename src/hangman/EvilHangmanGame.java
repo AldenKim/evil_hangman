@@ -10,7 +10,7 @@ public class EvilHangmanGame implements IEvilHangmanGame {
     private final Set<String> words = new HashSet<>();
     private final SortedSet<Character> guesses = new TreeSet<>();
     private final Map<String, Set<String>> patternsWithWords = new HashMap<>();
-    private int guessCount;
+    public int guessCount;
     private String currentPattern;
 
     public void getGuess(int count) {
@@ -19,6 +19,8 @@ public class EvilHangmanGame implements IEvilHangmanGame {
 
     @Override
     public void startGame(File dictionary, int wordLength) throws IOException, EmptyDictionaryException {
+        words.clear();
+
         if (dictionary == null) {
             throw new IOException("Empty dictionary");
         }
@@ -63,7 +65,6 @@ public class EvilHangmanGame implements IEvilHangmanGame {
 
         for(String word: words) {
             StringBuilder buildPattern = new StringBuilder(currentPattern);
-
             for(int i = 0; i < word.length(); i++) {
                 if(guess == word.charAt(i)) {
                     buildPattern.setCharAt(i, guess);
@@ -89,7 +90,6 @@ public class EvilHangmanGame implements IEvilHangmanGame {
                 currentPattern = tieBreak;
             }
         }
-
         words.clear();
         words.addAll(returnVal);
         guessCount--;
@@ -104,23 +104,38 @@ public class EvilHangmanGame implements IEvilHangmanGame {
     }
 
     private String tieBreak(String newPattern, String oldPattern, Character guess) {
-        if(newPattern.contains(Character.toString(guess))) {
-            return oldPattern;
-        }
+        boolean newHasGuess = newPattern.contains(Character.toString(guess));
+        boolean oldHasGuess = oldPattern.contains(Character.toString(guess));
 
-        if(oldPattern.contains(Character.toString(guess))) {
+        if(newHasGuess && !oldHasGuess) {
+            return oldPattern;
+        }else if(!newHasGuess && oldHasGuess) {
             return newPattern;
         }
 
-        if(helper(newPattern) < helper(oldPattern)) {
+        if(countCharactersInPattern(newPattern) < countCharactersInPattern(oldPattern)) {
             return newPattern;
-        } else if  (helper(newPattern) > helper(oldPattern)) {
+        } else if  (countCharactersInPattern(newPattern) > countCharactersInPattern(oldPattern)) {
             return oldPattern;
         }
+
+        int newRight = findRightMostInstance(newPattern, guess);
+        int oldRight = findRightMostInstance(oldPattern, guess);
+
+        if(newRight > oldRight) {
+            return newPattern;
+        } else if (newRight < oldRight) {
+            return oldPattern;
+        }
+
+        if(findNextRight(newPattern, oldPattern, guess) != -1) {
+            return newPattern;
+        }
+
         return oldPattern;
     }
 
-    private int helper(String pattern) {
+    private int countCharactersInPattern(String pattern) {
         int count = 0;
 
         for(Character c : pattern.toCharArray()) {
@@ -130,5 +145,26 @@ public class EvilHangmanGame implements IEvilHangmanGame {
         }
 
         return count;
+    }
+
+    private int findRightMostInstance(String pattern, Character guess) {
+        for(int i = pattern.length() - 1; i >= 0; i--) {
+            if(pattern.charAt(i) == guess) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private int findNextRight(String newPattern, String oldPattern, char guess) {
+        for (int i = newPattern.length() - 1; i >= 0; i--) {
+            if (newPattern.charAt(i) == guess && oldPattern.charAt(i) != guess) {
+                return i;
+            } else if (oldPattern.charAt(i) == guess && newPattern.charAt(i) != guess) {
+                return -1;
+            }
+        }
+        return -1;
     }
 }

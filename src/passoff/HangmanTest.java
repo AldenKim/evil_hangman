@@ -407,6 +407,9 @@ public class HangmanTest {
         assertEquals(2, possibleWords.size(), "Incorrect word count after 1st guess.");
         assertFalse(possibleWords.contains("charmillions"), "Incorrect content after 1st guess.");
         assertFalse(possibleWords.contains("phylogenesis"), "Incorrect content after 1st guess.");
+        for(String possibleWord : possibleWords) {
+            System.out.println(possibleWord);
+        }
         assertTrue(possibleWords.contains("antimonarchy"), "Incorrect content after 1st guess.");
         assertTrue(possibleWords.contains("boxingweight"), "Incorrect content after 1st guess.");
     }
