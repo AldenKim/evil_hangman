@@ -21,6 +21,14 @@ public class EvilHangmanGame implements IEvilHangmanGame {
         return guessCount;
     }
 
+    public String getCurrentPattern() {
+        return currentPattern;
+    }
+
+    public Set<String> getWords() {
+        return words;
+    }
+
     @Override
     public void startGame(File dictionary, int wordLength) throws IOException, EmptyDictionaryException {
         words.clear();
@@ -96,7 +104,6 @@ public class EvilHangmanGame implements IEvilHangmanGame {
         }
         words.clear();
         words.addAll(returnVal);
-        guessCount--;
 
         return returnVal;
     }
