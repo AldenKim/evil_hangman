@@ -13,8 +13,12 @@ public class EvilHangmanGame implements IEvilHangmanGame {
     public int guessCount;
     private String currentPattern;
 
-    public void getGuess(int count) {
+    public void setGuessCount(int count) {
         guessCount = count;
+    }
+
+    public int getGuessCount() {
+        return guessCount;
     }
 
     @Override
