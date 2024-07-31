@@ -70,7 +70,7 @@ public class EvilHangmanGame implements IEvilHangmanGame {
     public Set<String> makeGuess(char guess) throws GuessAlreadyMadeException {
         guess = Character.toLowerCase(guess);
         if(guesses.contains(guess)) {
-            throw new GuessAlreadyMadeException("That letter has been used already");
+            throw new GuessAlreadyMadeException("That letter has been used already: ");
         }
         guesses.add(guess);
         patternsWithWords.clear();

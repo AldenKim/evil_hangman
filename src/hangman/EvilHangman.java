@@ -25,13 +25,15 @@ public class EvilHangman {
             String curr = game.getCurrentPattern();
             System.out.println("Word: " + curr);
             System.out.print("Enter guess: ");
-            char enteredLetter = SCANNER.next().charAt(0);
-
-            try {
-                game.makeGuess(enteredLetter);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                continue;
+            char enteredLetter = inputHelper(SCANNER);
+            while (true) {
+                try {
+                    game.makeGuess(enteredLetter);
+                    break;
+                } catch (Exception e) {
+                    System.out.print(e.getMessage());
+                    enteredLetter = inputHelper(SCANNER);
+                }
             }
 
             if(Objects.equals(curr, game.getCurrentPattern())) {
@@ -71,5 +73,21 @@ public class EvilHangman {
             return string;
         }
         return "";
+    }
+
+    public static char inputHelper(Scanner scanner) {
+        boolean checker = true;
+        String input = "";
+        while(checker) {
+            input = scanner.nextLine();
+
+            if(input.length() != 1 || !(Character.toLowerCase(input.charAt(0)) >= 'a' && Character.toLowerCase(input.charAt(0)) <= 'z')) {
+                System.out.print("Invalid input! Enter guess: ");
+            } else {
+                checker = false;
+            }
+        }
+
+        return input.charAt(0);
     }
 }
